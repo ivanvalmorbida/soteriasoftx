@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Código Postal</title>
+    <link href="css/bootstrap_5.3.0.min.css" rel="stylesheet">
+    <link href="css/bootstrap-icons_1.10.5.css" rel="stylesheet">
+    <style>
+        .label_width {
+            width: 125px;
+        }
+    </style>
+</head>
+<div id="app" style="padding: 0px 20px 0px 20px;">
+    <h4 class="text-bg-info p-3 bi-pin-map-fill"> Cadastro de Código Postal</h4>
+    <br>
+    <div class="mb-3 row">
+        <label for="txtcep" class="label_width col-form-label" style="width: 125px;">CEP</label>
+        <input id="txtcep" name="txtcep" type="text" v-model="cep" class="form-control" style="width: 110px;"
+            @change="buscar_cep()" />
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtuf" class="label_width col-form-label">UF</label>
+        <select id="txtuf" class="form-select" v-model="uf" style="width: 80px;">
+            <option v-for="u in ufs" :value="u.codigo">{{u.sigla}}</option>
+        </select>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtcidade" class="label_width col-form-label">Cidade</label>
+        <input @change="cidade_change()" v-model="cidade" id="txtcidade" class="form-control" list="dtlcidade"
+            placeholder="Insira as iniciais e pressione Enter" style="width: 350px;">
+        <datalist id="dtlcidade">
+            <option v-for="c in cidades" :key="c.codigo">{{c.nome}}</option>
+        </datalist>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtbairro" class="label_width col-form-label">Bairro</label>
+        <input @change="bairro_change()" v-model="bairro" id="txtbairro" class="form-control" list="dtlbairro"
+            placeholder="Insira as iniciais e pressione Enter" style="width: 350px;">
+        <datalist id="dtlbairro">
+            <option v-for="c in bairros" :key="c.codigo">{{c.nome}}</option>
+        </datalist>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtendereco" class="label_width col-form-label">Endereço </label>
+        <input @change="endereco_change()" v-model="endereco" id="txtendereco" class="form-control" list="dtlendereco"
+            placeholder="Insira as iniciais e pressione Enter" style="width: 350px;">
+        <datalist id="dtlendereco">
+            <option v-for="c in enderecos" :key="c.codigo">{{c.nome}}</option>
+        </datalist>
+    </div>
+
+    <div class="mb-3 row">
+        <label for="txtcomplemento" class="label_width col-form-label">Complemento </label>
+        <input id="txtcomplemento" class="form-control" type="text" v-model="complemento" style="width: 350px;" />
+    </div>
+
+    <br>
+
+    <div class="text-bg-secondary p-3">
+        <button type="button" class="btn btn-primary bi-file-earmark-plus" @click="limpar(true)"> Novo</button>
+        <button :disabled="!boosalvar" style="margin-left: 20px;" type="button" class="btn btn-success bi-save"
+            @click="gravar()">
+            Gravar</button>
+        <button style="margin-left: 20px;" type="button" class="btn btn-danger bi-trash" @click="apagar()">
+            Apagar</button>
+        <button style="margin-left: 20px;" type="button" class="btn btn-light bi-search" @click="pesquisa()">
+            Localizar</button>
+    </div>
+
+    <br>
+    <div v-if="lstcep.length!=0" class="container text-left">
+        <div class="row text-bg-info p-3">
+            <div class="col-1">
+                CEP
+            </div>
+            <div class="col-1">
+                Estado
+            </div>
+            <div class="col-2">
+                Cidade
+            </div>
+            <div class="col-2">
+                Bairro
+            </div>
+            <div class="col-4">
+                Endereço
+            </div>
+            <div class="col-2">
+                Complemento
+            </div>
+        </div>
+
+        <div v-for="l in lstcep" class="row">
+            <div class="col-1">
+                <a href="#" @click="mostrarcep(l.cep)" class="link-primary">{{l.cep}}</a>
+            </div>
+            <div class="col-1">
+                {{l.sigla}}
+            </div>
+            <div class="col-2">
+                {{l.cidade_}}
+            </div>
+            <div class="col-2">
+                {{l.bairro_}}
+            </div>
+            <div class="col-4">
+                {{l.endereco_}}
+            </div>
+            <div class="col-2">
+                {{l.complemento}}
+            </div>
+        </div>
+    </div>
+
+
+    <div id="modSalvar" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="color: #008000;">Salvar dados</h5>
+                    <a class="btn-close" href="#" rel="modal:close"></a>
+                </div>
+                <div class="modal-body">
+                    <p style="color: #ffa500;">{{msginfo}}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="$('#modSalvar').hide()">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/jquery_3.7.0.min.js"></script>
+<script src="js/jmask_1.14.16.min.js"></script>
+<script src="js/jmodal_0.9.1.min.js"></script>
+<script src="js/vue_2.6.14.min.js"></script>
+<script src="js/vue-resource_1.5.3.min.js"></script>
+
+<script type="module">
+    var vm = new Vue({
+        el: '#app',
+        data: function data() {
+            return {
+                lstcep: [],
+                msginfo: '',
+                cep: '',
+
+                uf: null,
+                ufs: [],
+
+                cidade: '',
+                cidades: [],
+
+                bairro: '',
+                bairros: [],
+
+                endereco: '',
+                enderecos: [],
+
+                complemento: '',
+
+                boosalvar: true
+            };
+        },
+
+        methods: {
+            cidade_change() {
+                if (this.cidade != null) {
+                    if (this.cidade.length > 2) {
+                        this.$http.post("/cidade/nome", { str: this.cidade }).then((res) => {
+                            var r = res.body
+                            this.cidades = r
+                        })
+                    }
+                }
+            },
+
+            bairro_change() {
+                if (this.bairro != null) {
+                    if (this.bairro.length > 2) {
+                        this.$http.post("/bairro/nome", { str: this.bairro }).then((res) => {
+                            var r = res.body
+                            this.bairros = r
+                        })
+                    }
+                }
+            },
+
+            endereco_change() {
+                if (this.endereco != null) {
+                    if (this.endereco.length > 2) {
+                        this.$http.post("/endereco/nome", { str: this.endereco }).then((res) => {
+                            var r = res.body
+                            this.enderecos = r
+                        })
+                    }
+                }
+            },
+
+            pesquisa() {
+                if (this.uf != null) {
+                    this.$http.post('/cep/pesquisa', { estado: this.uf, cidade: this.cidade }).then((res) => {
+                        if (res.body.length > 0) {
+                            console.dir(res.body)
+                            this.lstcep = res.body
+                        }
+                        else {
+                            this.lstcep = []
+                        }
+                    })
+                }
+            },
+
+            mostrarcep(v) {
+                this.cep = v
+                this.buscar_cep()
+            },
+
+            buscar_cep() {
+                var c = this.cep
+                c = c.replace('.', '')
+                c = c.replace('-', '')
+
+                if (c.length == 8) {
+                    this.$http.post('/cep/cep', { cep: c }).then((res) => {
+                        if (res.body.length > 0) {
+                            this.uf = res.body[0].estado
+                            this.cidade = res.body[0].cidade_
+                            this.bairro = res.body[0].bairro_
+                            this.endereco = res.body[0].endereco_
+                            this.complemento = res.body[0].complemento
+                        }
+                        else {
+                            this.limpar(false)
+                        }
+                    })
+                }
+            },
+
+            limpar(l) {
+                if (l) this.cep = ''
+                this.complemento = ''
+                this.uf = null
+                this.cidade = ''
+                this.bairro = ''
+                this.endereco = ''
+            },
+
+            gravar() {
+                if (this.uf == null) {
+                    this.msginfo = 'Selecione a unidade federativa!'
+                    $("#modSalvar").modal({})
+
+                } else {
+                    if (this.cidade == '') {
+                        this.msginfo = 'Selecione a cidade!'
+                        $("#modSalvar").modal({})
+
+                    } else {
+                        if (this.cep == '') {
+                            this.msginfo = 'CEP não informado!'
+                            $("#modSalvar").modal({})
+
+                        } else {
+                            this.boosalvar = false
+                            this.$http.post('/cep/gravar', {
+                                cep: this.cep, estado: this.uf, cidade: this.cidade,
+                                bairro: this.bairro, endereco: this.endereco, complemento: this.complemento
+                            }).then((res) => {
+                                if (res.data.err_msg == '')
+                                    this.limpar(true)
+                                else
+                                    alert('Houve um erro ao salvar: ' + res.err_msg)
+
+                                this.boosalvar = true
+                            })
+                        }
+                    }
+                }
+            },
+
+            apagar() {
+                var c = this.cep
+                c = c.replace('.', '')
+                c = c.replace('-', '')
+
+                if (c.length == 8) {
+                    if (confirm("Confirma a exclusão desse CEP?")) {
+                        this.$http.post('/cep/apagar', { cep: c }).then((res) => {
+                            if (res.data.err_msg == '')
+                                this.limpar(true)
+                            else
+                                alert('Houve um erro ao apagar: ' + res.err_msg)
+                        })
+                    }
+                }
+            },
+        },
+
+        created: function () {
+            this.$http.post("/estado/todos").then((res) => {
+                this.ufs = res.body
+            })
+
+            var regex = /[?&]([^=#]+)=([^&#]*)/g, url = window.location.href, params = {}, match
+            while (match = regex.exec(url)) {
+                params[match[1]] = match[2]
+            }
+
+            if (params.ce != undefined) {
+                this.cep = params.ce
+                this.buscar_cep()
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        $('#txtcep').mask('00.000-000');
+    });
+</script>
+
+</html>

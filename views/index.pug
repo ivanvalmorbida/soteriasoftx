@@ -1,0 +1,35 @@
+extends layout
+
+block cabecal
+  link(rel='stylesheet', href='css/index.css')
+  script(src='js/index.js')
+  title #{empresa}
+
+block content
+  div(ng-controller='Soteriasoft.Control as ctrl', ng-app='Soteriasoft', style='margin: 0px 20px 0px 10px')
+    div(flex='', layout-gt-sm='row', layout-align='center center') 
+      h2 #{empresa}
+
+      md-list-item
+        div
+          md-button.md-raised.md-grid-item-content(href='pessoa', target="_blank", title="Pessoas")
+            p
+            md-icon(md-svg-icon="img/people.svg")
+            p
+            | Pessoas                
+        
+      md-list-item
+        div
+          md-button.md-raised.md-grid-item-content(href="cep", target="_blank", title="CEPs")
+            p
+            md-icon(md-svg-icon="img/cep.svg") 
+            p
+            | CEPs
+
+      md-list-item
+        div
+          md-button.md-raised.md-grid-item-content(href="usuario", target="_blank", title="Usuários")
+            p
+            md-icon(md-svg-icon="img/usuario.svg") 
+            p
+            | Usuários                                    
