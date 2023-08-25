@@ -71,12 +71,15 @@
             Apagar</button>
         <button style="margin-left: 20px;" type="button" class="btn btn-light bi-search" @click="pesquisa()">
             Localizar</button>
+
+        <button style="margin-left: 20px;" type="button" class="btn btn-info bi-globe" @click="buscaCep()"> Web
+            Busca</button>
     </div>
 
     <br>
     <div v-if="lstcep.length!=0" class="container text-left">
         <div class="row text-bg-info p-3">
-            <div class="col-1">
+            <div class="col-2">
                 CEP
             </div>
             <div class="col-1">
@@ -88,7 +91,7 @@
             <div class="col-2">
                 Bairro
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 Endereço
             </div>
             <div class="col-2">
@@ -97,7 +100,7 @@
         </div>
 
         <div v-for="l in lstcep" class="row">
-            <div class="col-1">
+            <div class="col-2">
                 <a href="#" @click="mostrarcep(l.cep)" class="link-primary">{{l.cep}}</a>
             </div>
             <div class="col-1">
@@ -109,7 +112,7 @@
             <div class="col-2">
                 {{l.bairro_}}
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 {{l.endereco_}}
             </div>
             <div class="col-2">
@@ -206,7 +209,7 @@
 
             pesquisa() {
                 if (this.uf != null) {
-                    this.$http.post('/cep/pesquisa', { estado: this.uf, cidade: this.cidade }).then((res) => {
+                    this.$http.post('/cep/pesquisa', { estado: this.uf, cidade: this.cidade, bairro: this.bairro }).then((res) => {
                         if (res.body.length > 0) {
                             console.dir(res.body)
                             this.lstcep = res.body
@@ -302,6 +305,27 @@
                     }
                 }
             },
+
+            buscaCep: function () {
+                if (this.cep != '') {
+                    var r = `https://viacep.com.br/ws/${this.cep.replace('.','').replace('-','')}/json/`
+
+                    fetch(r).then(response => response.json()).then(cep => {
+                        if (cep.erro)
+                            alert("Houve um erro ao tentar obter informações desse CEP!")
+                        else {
+                            console.dir(cep)
+                            this.$http.post("/estado/sigla", { str: cep.uf }).then((res) => {
+                                this.uf = res.body.codigo
+                                this.cidade = cep.localidade
+                                this.bairro = cep.bairro
+                                this.endereco = cep.logradouro
+                                this.complemento = cep.complemento
+                            })
+                        }
+                    })
+                }
+            }
         },
 
         created: function () {

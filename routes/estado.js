@@ -41,9 +41,9 @@ function sigla(req, res) {
 
   connection.connect()
   connection.query("select codigo, sigla from tb_estado"+
-  " where sigla like '"+txt+"%' order by sigla", function(err, rows) {
+  " where sigla='"+txt+"'", function(err, rows) {
     if (!err)
-      res.json(rows)
+      res.json(rows[0])
     else
       console.log('Error mensage: '+err)
   })

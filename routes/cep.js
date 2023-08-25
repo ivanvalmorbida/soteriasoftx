@@ -109,19 +109,24 @@ function cep(req, res) {
 function pesquisa(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
   var data = req.body
-  
+
   connection.connect()
 
   var lstpar = [data.estado, data.cidade]
-  var strsql = 'SELECT c.cep, u.sigla, u.nome as estado_, d.nome as cidade_,' +
-  ' b.nome as bairro_, e.nome as endereco_, c.complemento' +
-  ' from tb_cep as c' +
-  ' left join tb_estado u on u.codigo=c.estado' +
-  ' left join tb_cidade d on d.codigo=c.cidade' +
-  ' left join tb_bairro b on b.codigo=c.bairro' +
-  ' left join tb_endereco e on e.codigo=c.endereco' +
-  ' where c.estado=? and d.nome=?'
-  
+  var strsql = 'SELECT mask(cep, "##.###-###") cep, u.sigla, u.nome as estado_, d.nome as cidade_,' +
+    ' b.nome as bairro_, e.nome as endereco_, c.complemento' +
+    ' from tb_cep as c' +
+    ' left join tb_estado u on u.codigo=c.estado' +
+    ' left join tb_cidade d on d.codigo=c.cidade' +
+    ' left join tb_bairro b on b.codigo=c.bairro' +
+    ' left join tb_endereco e on e.codigo=c.endereco' +
+    ' where c.estado=? and d.nome=?'
+
+  if (data.bairro != null && data.bairro != '') {
+    strsql += ' and b.nome=?'
+    lstpar.push(data.bairro)
+  }
+
   strsql += ' order by b.nome, e.nome'
 
   connection.query(strsql, lstpar,
