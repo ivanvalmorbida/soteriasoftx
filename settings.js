@@ -1,7 +1,7 @@
 exports.dbConect = {
     host     : 'localhost',
     database : 'soteriasoft',
-    user     : 'ivan',
+    user     : 'root',
     password : 'ivanluis',
     connectTimeout  : 60000
 }
