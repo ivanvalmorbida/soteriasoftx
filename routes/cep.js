@@ -3,15 +3,10 @@ var express = require('express')
 var settings = require("../settings")
 var router = express.Router()
 
-router.get('/cep', index)
 router.post('/cep/cep', cep)
 router.post('/cep/gravar', gravar)
 router.post('/cep/apagar', apagar)
 router.post('/cep/pesquisa', pesquisa)
-
-function index(req, res) {
-  res.render('ceps')
-}
 
 function apagar(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
