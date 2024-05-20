@@ -139,6 +139,34 @@
             <label for="txtcpf" class="form-label-sm">CPF</label>
             <input id="txtcpf" class="form-control form-control-sm" type="text" v-model="pessoa.cpf" />
         </div>
+
+        <div class="col-md-5">
+            <label for="txtestadocivil" class="form-label-sm">Estado civil</label>
+            <input @change="estadocivil_change()" v-model="pessoa.estadocivil" id="txtestadocivil" class="form-control form-control-sm"
+                list="dtlestadocivil" placeholder="Insira as iniciais e pressione Enter">
+            <datalist id="dtlestadocivil">
+                <option v-for="c in cidades" :key="c.codigo">{{c.nome}}</option>
+            </datalist>
+        </div>
+
+        <div class="col-md-7">
+            <label for="txtconjuge" class="form-label-sm">Conjuge</label>
+            <input @change="conjuge_change()" v-model="pessoa.conjuge" id="txtconjuge" class="form-control form-control-sm"
+                list="dtlconjuge" placeholder="Insira as iniciais e pressione Enter">
+            <datalist id="dtlconjuge">
+                <option v-for="c in conjuges" :key="c.codigo">{{c.nome}}</option>
+            </datalist>
+        </div>
+
+        <div class="col-md-7">
+            <label for="txtprofissao" class="form-label-sm">Profissão</label>
+            <input @change="profissao_change()" v-model="pessoa.profissao" id="txtprofissao" class="form-control form-control-sm"
+                list="dtlprofissao" placeholder="Insira as iniciais e pressione Enter">
+            <datalist id="dtlprofissao">
+                <option v-for="c in profissoes" :key="c.codigo">{{c.nome}}</option>
+            </datalist>
+        </div>
+
     </div>
 </div>
 
@@ -196,7 +224,8 @@
                     sexo: '',
                     nascimento: '00:00:00'
                 },
-
+                conjuges:[],
+                profissoes:[],
                 nome: '',
                 lstcep: [],
                 msginfo: '',
