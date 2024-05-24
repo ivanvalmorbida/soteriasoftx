@@ -3,7 +3,8 @@ var router  = express.Router()
 var settings = require("../settings")
 var mysql   = require('mysql2')
 
-router.get('/estado_civil/estado_civil_descricao', estado_civil_descricao)
+router.post('/estado_civil/estado_civil_descricao', estado_civil_descricao)
+router.post('/estado_civil/estado_civil_todos', estado_civil_todos)
 
 function estado_civil_todos(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
@@ -20,7 +21,7 @@ function estado_civil_todos(req, res) {
 
 function estado_civil_descricao(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
-  var txt = req.query.txt
+  var txt = req.body.txt
 
   connection.connect()
   connection.query("select codigo, descricao from tb_estado_civil"+

@@ -154,12 +154,12 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label for="txtcidade" class="form-label-sm">Nascionalidade</label>
-                    <input @change="cidade_change()" v-model="pessoa.cidade" id="txtcidade"
-                        class="form-control form-control-sm" list="dtlcidade"
+                    <label for="txtnacionalidade" class="form-label-sm">Nascionalidade</label>
+                    <input @change="nacionalidade_change()" v-model="pessoa.nacionalidade" id="txtnacionalidade"
+                        class="form-control form-control-sm" list="dtlnacionalidade"
                         placeholder="Insira as iniciais e pressione Enter">
-                    <datalist id="dtlcidade">
-                        <option v-for="c in cidades" :key="c.codigo">{{c.nome}}</option>
+                    <datalist id="dtlnacionalidade">
+                        <option v-for="c in nacionalidades" :key="c.codigo">{{c.pais}}</option>
                     </datalist>
                 </div>
 
@@ -256,7 +256,7 @@
 </div>
 
 <script src="js/jmask_1.14.16.min.js"></script>
-<script src="js/jmodal_0.9.1.min.js"></script>
+<script src="js/jmodal_0.9.1.min.js"></script>estadocivils
 <script src="js/vue_2.6.14.min.js"></script>
 <script src="js/vue-resource_1.5.3.min.js"></script>
 
@@ -278,6 +278,8 @@
                 },
                 conjuges: [],
                 profissoes: [],
+                nacionalidades: [],
+                estadocivils: [],
                 nome: '',
                 lstcep: [],
                 msginfo: '',
@@ -302,20 +304,41 @@
         },
 
         methods: {
+            nacionalidade_change() {
+                if (this.pessoa.nacionalidade != null) {
+                    if (this.pessoa.nacionalidade.length > 2) {
+                        this.$http.post("/nacionalidade/nacionalidade_pais", { str: this.pessoa.nacionalidade }).then((res) => {
+                            var r = res.body
+                            console.dir(r)
+                            this.nacionalidades = r
+                        })
+                    }
+                }
+            },
+
+            estadocivil_change() {
+                if (this.pessoa.estadocivil != null) {
+                    if (this.pessoa.estadocivil.length > 2) {
+                        this.$http.post("/estado_civil/estado_civil_descricao", { str: this.pessoa.estadocivil }).then((res) => {
+                            var r = res.body
+                            console.dir(r)
+                            this.estadocivils = r
+                        })
+                    }
+                }
+            },
+
             cidade_change() {
-                if (this.cidade != null) {
-                    if (this.cidade.length > 2) {
+                if (this.pessoa.cidade != null) {
+                    if (this.pessoa.cidade.length > 2) {
                         this.$http.post("/cidade/nome", { str: this.pessoa.cidade }).then((res) => {
                             var r = res.body
                             this.cidades = r
                         })
                     }
                 }
-
-                var x = [{
-                    "foto": "https://fotosusers.imobiliaria636.com.br/109/foto.jpg", "situacao": 1, "ci": "luizlemos", "celular": "47999130166", "email": "luizlemos@imobiliaria636.com.br", "fixo": "47 3451-0636", "nome": "Fernando"
-                }]
             },
+
             bairro_change() {
                 if (this.bairro != null) {
                     if (this.bairro.length > 2) {
@@ -464,11 +487,6 @@
                 this.ufs = res.body
             })
 
-            this.$http.post("https://mielina.com.br/ws_site/site.asmx/uf_todas").then((res) => {
-                console.dir(res.data.d)
-            })
-
-            
             var regex = /[?&]([^=#]+)=([^&#]*)/g, url = window.location.href, params = {}, match
             while (match = regex.exec(url)) {
                 params[match[1]] = match[2]

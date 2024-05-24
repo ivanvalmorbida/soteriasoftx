@@ -3,7 +3,8 @@ var router  = express.Router()
 var settings = require("../settings")
 var mysql   = require('mysql2')
 
-router.get('/nacionalidade/nacionalidade_pais', nacionalidade_pais)
+router.post('/nacionalidade/nacionalidade_pais', nacionalidade_pais)
+router.get('/nacionalidade/nacionalidade_todas', nacionalidade_todas)
 
 function nacionalidade_todas(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
@@ -20,11 +21,11 @@ function nacionalidade_todas(req, res) {
 
 function nacionalidade_pais(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
-  var txt = req.query.txt
+  var str  = req.body.str
 
   connection.connect()
   connection.query("select codigo, pais from tb_nacionalidade"+
-  " where pais like '"+txt+"%' order by pais LIMIT 20", function(err, rows) {
+  " where pais like '"+str+"%' order by pais LIMIT 20", function(err, rows) {
     if (!err)
       return res.json(rows)
     else
