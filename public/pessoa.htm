@@ -311,8 +311,11 @@
                         })
                     }
                 }
-            },
 
+                var x = [{
+                    "foto": "https://fotosusers.imobiliaria636.com.br/109/foto.jpg", "situacao": 1, "ci": "luizlemos", "celular": "47999130166", "email": "luizlemos@imobiliaria636.com.br", "fixo": "47 3451-0636", "nome": "Fernando"
+                }]
+            },
             bairro_change() {
                 if (this.bairro != null) {
                     if (this.bairro.length > 2) {
@@ -461,6 +464,11 @@
                 this.ufs = res.body
             })
 
+            this.$http.post("https://mielina.com.br/ws_site/site.asmx/uf_todas").then((res) => {
+                console.dir(res.data.d)
+            })
+
+            
             var regex = /[?&]([^=#]+)=([^&#]*)/g, url = window.location.href, params = {}, match
             while (match = regex.exec(url)) {
                 params[match[1]] = match[2]
