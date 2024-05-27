@@ -10,9 +10,9 @@ function estado_civil_todos(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
 
   connection.connect()
-  connection.query('SELECT * from tb_estado_civil order by descricao', function(err, rows, fields) {
+  connection.query("SELECT codigo, descricao from tb_estado_civil order by descricao", function(err, rows, fields) {
     if (!err)
-      res.json({estado_civil_todos: rows})
+      res.json(rows)
     else
       console.log('Error mensage: '+err)
   })

@@ -186,13 +186,10 @@
                 </div>
 
                 <div class="col-md-5">
-                    <label for="txtestadocivil" class="form-label-sm">Estado civil</label>
-                    <input @change="estadocivil_change()" v-model="pessoa.estadocivil" id="txtestadocivil"
-                        class="form-control form-control-sm" list="dtlestadocivil"
-                        placeholder="Insira as iniciais e pressione Enter">
-                    <datalist id="dtlestadocivil">
-                        <option v-for="c in cidades" :key="c.codigo">{{c.nome}}</option>
-                    </datalist>
+                    <label for="cmpestadocivil" class="form-label-sm">Estado civil</label>
+                    <select class="form-select form-select-sm" id="cmbestadocivil" >
+                        <option v-for="e in estadocivils" :value="e.codigo">{{e.descricao}}</option>
+                    </select>
                 </div>
 
                 <div class="col-md-7">
@@ -211,7 +208,7 @@
                         class="form-control form-control-sm" list="dtlprofissao"
                         placeholder="Insira as iniciais e pressione Enter">
                     <datalist id="dtlprofissao">
-                        <option v-for="c in profissoes" :key="c.codigo">{{c.nome}}</option>
+                        <option v-for="c in profissoes" :key="c.cbo">{{c.descricao}}</option>
                     </datalist>
                 </div>
             </div>
@@ -220,6 +217,7 @@
 
         <div class="tab-pane fade" id="pills-juridica" role="tabpanel" aria-labelledby="pills-juridica-tab"
             tabindex="0">
+            
         </div>
     </div>
 </div>
@@ -256,7 +254,7 @@
 </div>
 
 <script src="js/jmask_1.14.16.min.js"></script>
-<script src="js/jmodal_0.9.1.min.js"></script>estadocivils
+<script src="js/jmodal_0.9.1.min.js"></script>
 <script src="js/vue_2.6.14.min.js"></script>
 <script src="js/vue-resource_1.5.3.min.js"></script>
 
@@ -304,25 +302,23 @@
         },
 
         methods: {
-            nacionalidade_change() {
-                if (this.pessoa.nacionalidade != null) {
-                    if (this.pessoa.nacionalidade.length > 2) {
-                        this.$http.post("/nacionalidade/nacionalidade_pais", { str: this.pessoa.nacionalidade }).then((res) => {
+            profissao_change() {
+                if (this.pessoa.profissao != null) {
+                    if (this.pessoa.profissao.length > 2) {
+                        this.$http.post("/cbo/cbo_descricao", { str: this.pessoa.profissao }).then((res) => {
                             var r = res.body
-                            console.dir(r)
-                            this.nacionalidades = r
+                            this.profissoes = r
                         })
                     }
                 }
             },
 
-            estadocivil_change() {
-                if (this.pessoa.estadocivil != null) {
-                    if (this.pessoa.estadocivil.length > 2) {
-                        this.$http.post("/estado_civil/estado_civil_descricao", { str: this.pessoa.estadocivil }).then((res) => {
+            nacionalidade_change() {
+                if (this.pessoa.nacionalidade != null) {
+                    if (this.pessoa.nacionalidade.length > 2) {
+                        this.$http.post("/nacionalidade/nacionalidade_pais", { str: this.pessoa.nacionalidade }).then((res) => {
                             var r = res.body
-                            console.dir(r)
-                            this.estadocivils = r
+                            this.nacionalidades = r
                         })
                     }
                 }
@@ -487,13 +483,18 @@
                 this.ufs = res.body
             })
 
+            this.$http.post("/estado_civil/estado_civil_todos").then((res) => {
+                this.estadocivils = res.body
+                this.estadocivils.unshift({ codigo: 0, descricao: '' })
+            })
+
             var regex = /[?&]([^=#]+)=([^&#]*)/g, url = window.location.href, params = {}, match
             while (match = regex.exec(url)) {
                 params[match[1]] = match[2]
             }
 
-            if (params.ce != undefined) {
-                this.cep = params.ce
+            if (params.pe != undefined) {
+                this.codigo = params.pe
                 this.buscar_cep()
             }
         }

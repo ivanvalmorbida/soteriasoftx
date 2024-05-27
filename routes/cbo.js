@@ -3,14 +3,14 @@ var router  = express.Router()
 var settings = require("../settings")
 var mysql   = require('mysql2')
 
-router.get('/cbo/cbo_descricao', cbo_descricao)
-router.get('/cbo/cbo_todos', cbo_todos)
+router.post('/cbo/cbo_descricao', cbo_descricao)
+router.post('/cbo/cbo_todos', cbo_todos)
 
 function cbo_todos(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
 
   connection.connect()
-  connection.query('SELECT * from tb_cbo order by descricao', function(err, rows, fields) {
+  connection.query('SELECT cbo, descricao from tb_cbo order by descricao', function(err, rows, fields) {
     if (!err)
       res.json({cbo_todos: rows})
     else
@@ -21,11 +21,11 @@ function cbo_todos(req, res) {
 
 function cbo_descricao(req, res) {
   var connection = mysql.createConnection(settings.dbConect)
-  var txt = req.query.txt
+  var str = req.body.str
 
   connection.connect()
   connection.query("select cbo, descricao from tb_cbo"+
-  " where descricao like '"+txt+"%' order by descricao LIMIT 20", function(err, rows) {
+  " where descricao like '%"+str+"%' order by descricao LIMIT 20", function(err, rows) {
     if (!err)
       return res.json(rows)
     else
