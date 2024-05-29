@@ -6,13 +6,15 @@ var
   logger          = require('morgan'),
  	http            = require('http'),
   session         = require('express-session'),
-  settings        = require("./settings")
-  
+  settings        = require("./settings"),
+  //cors            = require('cors')
+
 var server = http.createServer(app),
 	io = require('socket.io').listen(server)
 
 var app = express()
 
+//app.use(cors)
 app.use(cookieParser('soteriasoft'))
 app.use(bodyParser())
 app.set('views', path.join(__dirname, 'views'))
