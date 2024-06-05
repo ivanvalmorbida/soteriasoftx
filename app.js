@@ -6,7 +6,7 @@ var
   logger          = require('morgan'),
  	http            = require('http'),
   session         = require('express-session'),
-  settings        = require("./settings"),
+  settings        = require("./settings")
   //cors            = require('cors')
 
 var server = http.createServer(app),
